@@ -15,7 +15,11 @@ from services import CartService, OrderService, DiscountService, AdminService
 from validators import validate_add_item_request, validate_checkout_request
 
 app = Flask(__name__)
-CORS(app, origins=["https://uniblox-ten.vercel.app"])
+CORS(app,
+     origins=["https://uniblox-ten.vercel.app"],
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"])
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
