@@ -19,8 +19,8 @@ gunicorn==21.2.0
 # flask-restx==1.2.0
 # marshmallow==3.20.1
 
-# Optional: For CORS support (if needed for frontend)
-# flask-cors==4.0.0
+# For CORS support (required by your backend)
+flask-cors==4.0.0
 
 # Optional: For rate limiting (if needed)
 # flask-limiter==3.5.0
