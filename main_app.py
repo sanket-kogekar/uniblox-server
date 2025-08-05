@@ -8,12 +8,14 @@ from datetime import datetime
 import uuid
 from typing import Dict, List, Optional
 import logging
+from flask_cors import CORS
 
 from models import InMemoryStore, Cart, Order, Item, DiscountCode
 from services import CartService, OrderService, DiscountService, AdminService
 from validators import validate_add_item_request, validate_checkout_request
 
 app = Flask(__name__)
+CORS(app, origins=["https://uniblox-ten.vercel.app"])
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
