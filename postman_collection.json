@@ -1,0 +1,519 @@
+{
+  "info": {
+    "name": "E-commerce Store API",
+    "description": "Complete API collection for testing the e-commerce store endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "user123",
+      "type": "string"
+    },
+    {
+      "key": "discount_code",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cart Operations",
+      "item": [
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"item_id\": \"laptop001\",\n    \"name\": \"Gaming Laptop\",\n    \"price\": 999.99,\n    \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}/items",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}", "items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Another Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"item_id\": \"mouse001\",\n    \"name\": \"Gaming Mouse\",\n    \"price\": 79.99,\n    \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}/items",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}", "items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Item with Invalid Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"item_id\": \"invalid001\",\n    \"name\": \"\",\n    \"price\": -10.0,\n    \"quantity\": 0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}/items",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}", "items"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Checkout Operations",
+      "item": [
+        {
+          "name": "Checkout without Discount",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}", "checkout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout with Invalid Discount Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"discount_code\": \"INVALID_CODE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}", "checkout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout with Valid Discount Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"discount_code\": \"{{discount_code}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}", "checkout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout Empty Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/empty_user/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "empty_user", "checkout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations",
+      "item": [
+        {
+          "name": "Generate Discount Code",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/discount-codes",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "discount-codes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Store Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/stats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Discount Codes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/discount-codes",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "discount-codes"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Complete Shopping Flow",
+          "item": [
+            {
+              "name": "1. Add First Item",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"phone001\",\n    \"name\": \"Smartphone\",\n    \"price\": 699.99,\n    \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/testuser1/items",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "testuser1", "items"]
+                }
+              }
+            },
+            {
+              "name": "2. Add Second Item",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"case001\",\n    \"name\": \"Phone Case\",\n    \"price\": 29.99,\n    \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/testuser1/items",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "testuser1", "items"]
+                }
+              }
+            },
+            {
+              "name": "3. View Cart",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/cart/testuser1",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "testuser1"]
+                }
+              }
+            },
+            {
+              "name": "4. Checkout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/testuser1/checkout",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "testuser1", "checkout"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Generate Discount Code Scenario",
+          "item": [
+            {
+              "name": "Order 1 - User A",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"item1\",\n    \"name\": \"Product 1\",\n    \"price\": 50.0,\n    \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/userA/items",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "userA", "items"]
+                }
+              }
+            },
+            {
+              "name": "Checkout Order 1",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/userA/checkout",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "userA", "checkout"]
+                }
+              }
+            },
+            {
+              "name": "Order 2 - User B",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"item2\",\n    \"name\": \"Product 2\",\n    \"price\": 75.0,\n    \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/userB/items",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "userB", "items"]
+                }
+              }
+            },
+            {
+              "name": "Checkout Order 2",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/userB/checkout",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "userB", "checkout"]
+                }
+              }
+            },
+            {
+              "name": "Order 3 - User C (Should generate discount)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"item_id\": \"item3\",\n    \"name\": \"Product 3\",\n    \"price\": 100.0,\n    \"quantity\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/userC/items",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "userC", "items"]
+                }
+              }
+            },
+            {
+              "name": "Checkout Order 3",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/cart/userC/checkout",
+                  "host": ["{{base_url}}"],
+                  "path": ["cart", "userC", "checkout"]
+                }
+              }
+            },
+            {
+              "name": "Check Generated Discount Codes",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/admin/discount-codes",
+                  "host": ["{{base_url}}"],
+                  "path": ["admin", "discount-codes"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Error Scenarios",
+      "item": [
+        {
+          "name": "404 - Non-existent Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/nonexistent",
+              "host": ["{{base_url}}"],
+              "path": ["nonexistent"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "405 - Method Not Allowed",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cart/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "{{user_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

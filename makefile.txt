@@ -1,0 +1,209 @@
+# Makefile for E-commerce Store API
+# Provides convenient commands for development, testing, and deployment
+
+.PHONY: help install run test clean docker build deploy
+
+# Default Python interpreter
+PYTHON := python3
+PIP := pip3
+
+# Application settings
+APP_NAME := ecommerce-api
+PORT := 5000
+HOST := 0.0.0.0
+
+help: ## Show this help message
+	@echo "E-commerce Store API - Available Commands:"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+# Development Commands
+install: ## Install dependencies
+	$(PIP) install -r requirements.txt
+
+install-dev: ## Install development dependencies
+	$(PIP) install -r requirements.txt
+	$(PIP) install pytest pytest-flask pytest-cov coverage black flake8 mypy
+
+run: ## Run development server
+	$(PYTHON) run.py --host $(HOST) --port $(PORT)
+
+run-prod: ## Run production server with gunicorn
+	gunicorn --bind $(HOST):$(PORT) --workers 4 --timeout 120 app:app
+
+run-test: ## Run server with test data
+	$(PYTHON) run.py --test --host $(HOST) --port $(PORT)
+
+# Testing Commands
+test: ## Run all tests
+	$(PYTHON) -m pytest test_app.py -v
+
+test-cov: ## Run tests with coverage report
+	$(PYTHON) -m pytest test_app.py --cov=. --cov-report=html --cov-report=term-missing
+
+test-unit: ## Run unit tests only
+	$(PYTHON) -m pytest test_app.py::ModelsTestCase test_app.py::ServicesTestCase -v
+
+test-api: ## Run API tests only
+	$(PYTHON) -m pytest test_app.py::EcommerceAPITestCase -v
+
+test-watch: ## Run tests in watch mode (requires pytest-watch)
+	ptw -- test_app.py -v
+
+# Code Quality Commands
+lint: ## Run code linting
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+format: ## Format code with black
+	black --line-length 100 *.py
+
+type-check: ## Run type checking with mypy
+	mypy --ignore-missing-imports *.py
+
+quality: lint format type-check ## Run all code quality checks
+
+# Docker Commands
+docker-build: ## Build Docker image
+	docker build -t $(APP_NAME) .
+
+docker-run: ## Run Docker container
+	docker run -p $(PORT):$(PORT) --name $(APP_NAME)-container $(APP_NAME)
+
+docker-run-detached: ## Run Docker container in background
+	docker run -d -p $(PORT):$(PORT) --name $(APP_NAME)-container $(APP_NAME)
+
+docker-stop: ## Stop Docker container
+	docker stop $(APP_NAME)-container || true
+	docker rm $(APP_NAME)-container || true
+
+docker-clean: ## Clean Docker images and containers
+	docker stop $(APP_NAME)-container || true
+	docker rm $(APP_NAME)-container || true
+	docker rmi $(APP_NAME) || true
+
+# Database Commands (for future database integration)
+db-init: ## Initialize database (placeholder for future use)
+	@echo "Database initialization - implement when adding database support"
+
+db-migrate: ## Run database migrations (placeholder for future use)
+	@echo "Database migration - implement when adding database support"
+
+db-seed: ## Seed database with test data (placeholder for future use)
+	@echo "Database seeding - implement when adding database support"
+
+# Deployment Commands
+deploy-staging: ## Deploy to staging environment
+	@echo "Deploying to staging..."
+	@echo "This would typically involve:"
+	@echo "1. Running tests"
+	@echo "2. Building Docker image"
+	@echo "3. Pushing to registry"
+	@echo "4. Deploying to staging environment"
+
+deploy-prod: ## Deploy to production environment
+	@echo "Deploying to production..."
+	@echo "This would typically involve:"
+	@echo "1. Running full test suite"
+	@echo "2. Building production Docker image"
+	@echo "3. Pushing to production registry"
+	@echo "4. Blue-green deployment"
+
+# Utility Commands
+clean: ## Clean up temporary files
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
+	find . -type d -name "*.egg-info" -exec rm -rf {} + || true
+	rm -rf .coverage htmlcov/ .pytest_cache/ dist/ build/
+
+logs: ## Show application logs (when running with Docker)
+	docker logs $(APP_NAME)-container
+
+health: ## Check application health
+	curl -f http://$(HOST):$(PORT)/health || echo "Health check failed"
+
+# Load Testing Commands (requires Apache Bench or similar)
+load-test: ## Run basic load test
+	@echo "Running load test..."
+	@echo "Note: Install 'ab' (Apache Bench) for load testing"
+	# ab -n 1000 -c 10 http://$(HOST):$(PORT)/health
+
+# Development Workflow Commands
+dev-setup: install-dev ## Set up development environment
+	@echo "Development environment setup complete!"
+	@echo "Run 'make run' to start the development server"
+
+dev-test: test lint ## Run development tests and linting
+	@echo "Development testing complete!"
+
+pre-commit: quality test ## Run pre-commit checks
+	@echo "Pre-commit checks passed!"
+
+# Documentation Commands
+docs: ## Generate API documentation (placeholder)
+	@echo "API documentation generation - implement when adding docs"
+
+api-docs: ## Open API documentation in browser
+	@echo "Opening API documentation..."
+	@echo "For now, see README.md for API documentation"
+
+# Environment Commands
+env-dev: ## Set up development environment variables
+	@echo "export FLASK_ENV=development" > .env
+	@echo "export SECRET_KEY=dev-secret-key" >> .env
+	@echo "export DISCOUNT_ORDER_FREQUENCY=3" >> .env
+	@echo "Development environment file created: .env"
+
+env-prod: ## Set up production environment variables template
+	@echo "export FLASK_ENV=production" > .env.prod.template
+	@echo "export SECRET_KEY=your-production-secret-key" >> .env.prod.template
+	@echo "export DISCOUNT_ORDER_FREQUENCY=5" >> .env.prod.template
+	@echo "Production environment template created: .env.prod.template"
+
+# Monitoring Commands
+monitor: ## Monitor application (placeholder for future monitoring setup)
+	@echo "Application monitoring - implement when adding monitoring"
+
+metrics: ## Show application metrics
+	curl -s http://$(HOST):$(PORT)/admin/stats | python -m json.tool
+
+# Backup Commands (for future database integration)
+backup: ## Backup application data
+	@echo "Data backup - implement when adding persistent storage"
+
+restore: ## Restore application data
+	@echo "Data restore - implement when adding persistent storage"
+
+# Quick Start Commands
+quick-start: install run-test ## Quick start with test data
+	@echo "Quick start complete! Server running with test data."
+
+demo: ## Run demo scenario
+	@echo "Running demo scenario..."
+	@echo "1. Starting server with test data..."
+	$(PYTHON) run.py --test &
+	@sleep 3
+	@echo "2. Testing health endpoint..."
+	curl -s http://$(HOST):$(PORT)/health
+	@echo "3. Demo complete! Check README.md for API usage examples."
+
+# CI/CD Commands
+ci-test: install test lint ## CI/CD test pipeline
+	@echo "CI/CD testing pipeline complete!"
+
+ci-build: docker-build ## CI/CD build pipeline
+	@echo "CI/CD build pipeline complete!"
+
+ci-deploy: ci-test ci-build ## CI/CD full pipeline
+	@echo "CI/CD pipeline complete!"
+
+# Show current status
+status: ## Show current application status
+	@echo "=== E-commerce Store API Status ==="
+	@echo "Python version: $(shell $(PYTHON) --version)"
+	@echo "Pip version: $(shell $(PIP) --version)"
+	@echo "Application name: $(APP_NAME)"
+	@echo "Default host: $(HOST)"
+	@echo "Default port: $(PORT)"
+	@echo "Environment: $(shell echo $FLASK_ENV || echo 'not set')"
+	@echo "==================================="
